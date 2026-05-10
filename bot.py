@@ -24,7 +24,7 @@ MENU = ReplyKeyboardMarkup([
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.effective_user.first_name
     await update.message.reply_text(
-        f"Salom, {name}! 👋\n\nMen @samik18uz tomonidan yaratilgan AI yordamchiman.\n\nQuyidagi menyudan tanlang:",
+        f"Salom, {name}! 👋\n\nMen @samik_1806 tomonidan yaratilgan AI yordamchiman.\n\nQuyidagi menyudan tanlang:",
         reply_markup=MENU
     )
 
