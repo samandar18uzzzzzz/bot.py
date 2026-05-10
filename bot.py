@@ -316,13 +316,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     if text == "ℹ️ Yordam":
         await update.message.reply_text(
-            "ℹ️ *Yordam:*\n\n🌤 Ob-havo • 💰 Valyuta
-🌐 Yangiliklar • 🎮 Viktorina
-📊 PPTX slayd (rasimli!) • 📝 Eslatmalar
-🤖 AI suhbat
-
-Yaratuvchi: @Samik_1806
-Eslatma: *eslatma: matn*",
+            "ℹ️ *Yordam:*\n\n🌤 Ob-havo • 💰 Valyuta\n🌐 Yangiliklar • 🎮 Viktorina\n📊 PPTX slayd (rasimli!) • 📝 Eslatmalar\n🤖 AI suhbat\n\nYaratuvchi: @Samik_1806\nEslatma: *eslatma: matn*",
             parse_mode="Markdown", reply_markup=MENU
         )
         return
