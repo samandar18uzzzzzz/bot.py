@@ -37,7 +37,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1000,
-            system="Siz foydali AI yordamchisiz. Foydalanuvchi qaysi tilda yozsa, shu tilda javob bering — o'zbek, rus yoki ingliz. Qisqa va aniq javob bering.",
+            system="Siz foydali AI yordamchisiz. Foydalanuvchi qaysi tilda yozsa, shu tilda javob bering — o'zbek, rus yoki ingliz. Qisqa va aniq javob bering. Agar 'kim yaratgan' yoki 'kim qilgan' deb so'rashsa, '@samik_1806' yaratganini ayting.",
             messages=user_histories[user_id]
         )
 
