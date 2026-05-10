@@ -141,18 +141,19 @@ def create_pptx(topic: str, slides_data: list) -> io.BytesIO:
 
         if img_bytes:
             img_stream = io.BytesIO(img_bytes)
-            # Rasmni o'ng tomonga qo'yish
-            pic = slide.shapes.add_picture(img_stream, Inches(7.5), Inches(0), Inches(5.83), Inches(7.5))
-
-            # Qoraytirgich overlay
-            overlay = slide.shapes.add_shape(1, Inches(7.5), Inches(0), Inches(5.83), Inches(7.5))
+            # Rasmni to'liq fonga qo'yish
+            slide.shapes.add_picture(img_stream, Inches(0), Inches(0), Inches(13.33), Inches(7.5))
+            # Qoramtir shaffof qatlam
+            overlay = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(13.33), Inches(7.5))
             overlay.fill.solid()
-            overlay.fill.fore_color.rgb = OVERLAY
-            overlay.fill.fore_color.theme_color = None
-            from pptx.util import Pt as P
+            overlay.fill.fore_color.rgb = RGBColor(10, 10, 20)
             overlay.line.fill.background()
-            # Shaffoflik (70%)
-            overlay.fill.fore_color.rgb = RGBColor(12, 12, 22)
+            from lxml import etree
+            sp = overlay.element
+            spPr = sp.find(".//{http://schemas.openxmlformats.org/drawingml/2006/main}solidFill")
+            if spPr is not None:
+                alpha = etree.SubElement(spPr.find(".//{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr"), "{http://schemas.openxmlformats.org/drawingml/2006/main}alpha")
+                alpha.set("val", "75000")
 
         # Chiziq
         line = slide.shapes.add_shape(1, Inches(0), Inches(1.7), Inches(7.3), Pt(1.5))
@@ -351,7 +352,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_document(
                 document=pptx_file,
                 filename=f"{text[:30]}.pptx",
-                caption=f"📊 *{text}* bo'yicha slayd tayyor! Rasimlar Unsplash dan olindi 🖼",
+                caption=f"📊 *{text}* bo'yicha slayd tayyor!",
                 parse_mode="Markdown",
                 reply_markup=MENU
             )
