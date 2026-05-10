@@ -35,7 +35,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         # Claude API ga yuborish
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-6",
             max_tokens=1000,
             system="Siz foydali AI yordamchisiz. Foydalanuvchi qaysi tilda yozsa, shu tilda javob bering — o'zbek, rus yoki ingliz. Qisqa va aniq javob bering.",
             messages=user_histories[user_id]
