@@ -372,16 +372,36 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["mode"] = "ai"
         return
 
-    # AI suhbat
+    # AI suhbat - Tavily bilan
     if user_id not in user_histories:
         user_histories[user_id] = []
-    user_histories[user_id].append({"role": "user", "content": text})
+
+    # Joriy sana/vaqt haqida so'rov bo'lsa Tavily ishlatish
+    time_keywords = ["bugun", "hozir", "sana", "kun", "yil", "oy", "yangilik", "xabar", "today", "news", "current", "latest", "2024", "2025", "2026"]
+    use_search = any(kw in text.lower() for kw in time_keywords)
+
+    search_context = ""
+    if use_search and TAVILY_API_KEY:
+        try:
+            res = requests.post("https://api.tavily.com/search", json={
+                "api_key": TAVILY_API_KEY, "query": text, "max_results": 2
+            }).json()
+            results = res.get("results", [])
+            if results:
+                search_context = "\n\nInternet qidiruv natijalari:\n"
+                for r in results[:2]:
+                    search_context += f"- {r['title']}: {r['content'][:300]}\n"
+        except:
+            pass
+
+    full_text = text + search_context
+    user_histories[user_id].append({"role": "user", "content": full_text})
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
     try:
         response = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1000,
-            system="Siz @Samik_1806 tomonidan yaratilgan AI yordamchisiz. Claude yoki Anthropic haqida gapirmaysiz. Kim yaratgani so'ralsa '@Samik_1806 yaratgan' deng. Foydalanuvchi qaysi tilda yozsa shu tilda javob bering. Qisqa va aniq javob bering.",
+            system="Siz @Samik_1806 tomonidan yaratilgan AI yordamchisiz. Claude yoki Anthropic haqida gapirmaysiz. Kim yaratgani so'ralsa '@Samik_1806 yaratgan' deng. Foydalanuvchi qaysi tilda yozsa shu tilda javob bering. Agar internet qidiruv natijalari berilsa, ulardan foydalaning. Qisqa va aniq javob bering.",
             messages=user_histories[user_id]
         )
         reply = response.content[0].text
