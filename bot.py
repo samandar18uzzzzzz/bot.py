@@ -22,6 +22,7 @@ client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 user_histories = {}
 user_notes = {}
 user_quiz = {}
+user_names = {}
 
 CITY_MAP = {
     "toshkent": "Tashkent", "toshkend": "Tashkent",
@@ -41,20 +42,72 @@ MENU = ReplyKeyboardMarkup([
 ], resize_keyboard=True)
 
 QUIZ_QUESTIONS = [
+    # Geografiya
     {"q": "O'zbekistonning poytaxti?", "options": ["Samarqand", "Toshkent", "Buxoro", "Namangan"], "answer": 1},
     {"q": "Dunyo eng baland tog'i?", "options": ["K2", "Kangchenjunga", "Everest", "Lhotse"], "answer": 2},
+    {"q": "Eng katta okean?", "options": ["Atlantika", "Hind", "Tinch", "Arktika"], "answer": 2},
+    {"q": "Qaysi mamlakat eng ko'p aholiga ega?", "options": ["Hindiston", "Xitoy", "AQSh", "Rossiya"], "answer": 0},
+    {"q": "Afrika eng uzun daryosi?", "options": ["Kongo", "Niger", "Nil", "Zambezi"], "answer": 2},
+    {"q": "Qaysi shahar Fransiyaning poytaxti?", "options": ["Berlin", "London", "Madrid", "Paris"], "answer": 3},
+    {"q": "Dunyo eng katta mamlakatı?", "options": ["Kanada", "Xitoy", "AQSh", "Rossiya"], "answer": 3},
+    {"q": "O'zbekistonda nechta viloyat bor?", "options": ["10", "12", "14", "16"], "answer": 2},
+    {"q": "Qaysi tog' tizimi Yevropa va Osiyoni ajratadi?", "options": ["Alp", "Kavkaz", "Ural", "Karpat"], "answer": 2},
+    {"q": "Yaponiyaning poytaxti?", "options": ["Osaka", "Kioto", "Tokyo", "Hiroshima"], "answer": 2},
+    # Tarix
+    {"q": "O'zbekiston mustaqillikni qachon oldi?", "options": ["1990", "1991", "1992", "1993"], "answer": 1},
+    {"q": "Amir Temur qaysi yilda tug'ilgan?", "options": ["1320", "1336", "1350", "1362"], "answer": 1},
+    {"q": "Birinchi jahon urushi qachon boshlangan?", "options": ["1912", "1913", "1914", "1915"], "answer": 2},
+    {"q": "Ikkinchi jahon urushi qachon tugagan?", "options": ["1943", "1944", "1945", "1946"], "answer": 2},
+    {"q": "Buyuk Ipak yo'li qaysi shahardan o'tgan?", "options": ["Buxoro", "Samarqand", "Xiva", "Hammasi"], "answer": 3},
+    {"q": "Qaysi imperiya eng katta bo'lgan?", "options": ["Rim", "Britaniya", "Mo'g'ul", "Usmonli"], "answer": 1},
+    {"q": "Kolumb Amerikani qachon kashf etgan?", "options": ["1488", "1490", "1492", "1495"], "answer": 2},
+    # Fan va texnologiya
     {"q": "Quyosh sistemasida nechta sayyora?", "options": ["7", "8", "9", "10"], "answer": 1},
     {"q": "Internetni kim ixtiro qilgan?", "options": ["Bill Gates", "Steve Jobs", "Tim Berners-Lee", "Elon Musk"], "answer": 2},
-    {"q": "O'zbekiston mustaqillikni qachon oldi?", "options": ["1990", "1991", "1992", "1993"], "answer": 1},
-    {"q": "Eng katta okean?", "options": ["Atlantika", "Hind", "Tinch", "Arktika"], "answer": 2},
+    {"q": "Suvning kimyoviy formulasi?", "options": ["CO2", "H2O", "O2", "NaCl"], "answer": 1},
+    {"q": "Eng tez hayvon?", "options": ["Sher", "Gepard", "Ot", "Burgut"], "answer": 1},
+    {"q": "Inson tanasida nechta suyak bor?", "options": ["186", "196", "206", "216"], "answer": 2},
+    {"q": "Qaysi planet Quyoshga eng yaqin?", "options": ["Venera", "Merkuriy", "Mars", "Yer"], "answer": 1},
+    {"q": "Yorug'lik tezligi (km/s)?", "options": ["200,000", "250,000", "300,000", "350,000"], "answer": 2},
+    {"q": "DNA nima?", "options": ["Oqsil", "Irsiy ma'lumot", "Vitamin", "Mineral"], "answer": 1},
+    {"q": "Qaysi element eng yengil?", "options": ["Geliy", "Vodorod", "Litiy", "Azot"], "answer": 1},
+    {"q": "Kompyuterni kim ixtiro qilgan?", "options": ["Bill Gates", "Alan Turing", "Steve Jobs", "Charles Babbage"], "answer": 3},
+    # Sport
+    {"q": "FIFA Jahon chempionati qancha yilda bir bo'ladi?", "options": ["2", "3", "4", "5"], "answer": 2},
+    {"q": "Tennis kortida nechta o'yinchi o'ynaydi (yakka)?", "options": ["1", "2", "3", "4"], "answer": 1},
+    {"q": "Olimpiya o'yinlari qancha yilda bir bo'ladi?", "options": ["2", "3", "4", "5"], "answer": 2},
+    {"q": "Basketbol to'pi nechta oyoq balandlikdan tashlashda 3 ochko?", "options": ["4.5m", "5.8m", "6.75m", "7m"], "answer": 2},
+    {"q": "Futbol darvozasining eni?", "options": ["6m", "7m", "7.32m", "8m"], "answer": 2},
+    # Matematika
+    {"q": "17 x 8 = ?", "options": ["126", "136", "146", "156"], "answer": 1},
+    {"q": "√144 = ?", "options": ["11", "12", "13", "14"], "answer": 1},
+    {"q": "2^10 = ?", "options": ["512", "1024", "2048", "256"], "answer": 1},
+    {"q": "Uchburchak burchaklari yig'indisi?", "options": ["90°", "180°", "270°", "360°"], "answer": 1},
+    {"q": "Pi soni taxminan?", "options": ["3.14", "3.16", "3.18", "3.12"], "answer": 0},
+    # Adabiyot va madaniyat
+    {"q": "Alisher Navoiy qaysi asarni yozgan?", "options": ["Shohnoma", "Xamsa", "Boburnoma", "Qutadg'u bilig"], "answer": 1},
+    {"q": "Hamza Hakimzoda Niyoziy kim?", "options": ["Shoир", "Dramaturg", "Ikkalasi ham", "Rassом"], "answer": 2},
+    {"q": "O'zbek tilida nechta harf bor (lotin)?", "options": ["26", "29", "32", "35"], "answer": 1},
+    {"q": "Bobur mirzo qaysi davlatni tuzgan?", "options": ["Safaviy", "Boyqaro", "Boburiylar", "Shayboniy"], "answer": 2},
+    # Texnologiya
+    {"q": "Python qaysi yilda yaratilgan?", "options": ["1985", "1989", "1991", "1995"], "answer": 2},
+    {"q": "Google qachon tashkil topgan?", "options": ["1996", "1997", "1998", "1999"], "answer": 2},
+    {"q": "iPhone qachon chiqgan?", "options": ["2005", "2006", "2007", "2008"], "answer": 2},
+    {"q": "WWW kim ixtiro qilgan?", "options": ["Bill Gates", "Tim Berners-Lee", "Vint Cerf", "Steve Jobs"], "answer": 1},
+    {"q": "RAM nima?", "options": ["Doimiy xotira", "Operativ xotira", "Protsessor", "Disk"], "answer": 1},
 ]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    name = update.effective_user.first_name
-    await update.message.reply_text(
-        f"Salom, {name}! 👋\n\nMen @Samik_1806 tomonidan yaratilgan AI yordamchiman.\n\nQuyidagi menyudan tanlang:",
-        reply_markup=MENU
-    )
+    user_id = update.effective_user.id
+    user_names.pop(user_id, None)
+    context.user_data["waiting_name"] = True
+    greetings = [
+        "Assalomu alaykum! Xush kelibsiz! 🎉\n\nMen sizning shaxsiy AI yordamchingizman! 🤖\n\nSizni to'g'ri chaqirish uchun — ismingizni ayting-chi? 😊",
+        "Salom salom! Kelaveringlar, joy bor! 😄\n\nMen sizning AI yordamchingizman! 🤖\n\nQanday ism bilan murojaat qilay sizga? 🤔",
+        "Voy, yangi mehmon! Xush kelibsiz! 🥳\n\nMen sizxizmatida turgan AI yordamchiman! 🤖\n\nAvval ismingizni biling-chi? 😊",
+    ]
+    import random as rnd
+    await update.message.reply_text(rnd.choice(greetings))
 
 async def get_weather(city: str) -> str:
     try:
@@ -120,70 +173,66 @@ def create_pptx(topic: str, slides_data: list) -> io.BytesIO:
     prs.slide_width = Inches(13.33)
     prs.slide_height = Inches(7.5)
 
-    BG_COLOR = RGBColor(12, 12, 22)
     ACCENT = RGBColor(80, 180, 255)
     WHITE = RGBColor(255, 255, 255)
-    GRAY = RGBColor(160, 160, 180)
-    OVERLAY = RGBColor(12, 12, 22)
+    BG_COLOR = RGBColor(12, 12, 22)
 
     for i, slide_data in enumerate(slides_data):
         slide = prs.slides.add_slide(prs.slide_layouts[6])
 
-        # Fon
+        # Qora fon (rasm bo'lmasa)
         bg = slide.background
         fill = bg.fill
         fill.solid()
         fill.fore_color.rgb = BG_COLOR
 
-        # Unsplash rasm olish
+        # Unsplash rasm
         search_query = slide_data.get("image_query", topic)
         img_bytes = get_unsplash_image(search_query)
 
         if img_bytes:
-            img_stream = io.BytesIO(img_bytes)
-            # Rasmni to'liq fonga qo'yish
-            slide.shapes.add_picture(img_stream, Inches(0), Inches(0), Inches(13.33), Inches(7.5))
-            # Qoramtir shaffof qatlam
-            overlay = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(13.33), Inches(7.5))
-            overlay.fill.solid()
-            overlay.fill.fore_color.rgb = RGBColor(10, 10, 20)
-            overlay.line.fill.background()
-            from lxml import etree
-            sp = overlay.element
-            spPr = sp.find(".//{http://schemas.openxmlformats.org/drawingml/2006/main}solidFill")
-            if spPr is not None:
-                alpha = etree.SubElement(spPr.find(".//{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr"), "{http://schemas.openxmlformats.org/drawingml/2006/main}alpha")
-                alpha.set("val", "75000")
+            try:
+                img_stream = io.BytesIO(img_bytes)
+                # O'ng tomonga rasm qo'yish
+                pic = slide.shapes.add_picture(img_stream, Inches(7.0), Inches(0), Inches(6.33), Inches(7.5))
+            except Exception as e:
+                print(f"Rasm qo'shishda xato: {e}")
 
-        # Chiziq
-        line = slide.shapes.add_shape(1, Inches(0), Inches(1.7), Inches(7.3), Pt(1.5))
+        # Chap tomonda gradient overlay
+        overlay = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(8.5), Inches(7.5))
+        overlay.fill.solid()
+        overlay.fill.fore_color.rgb = BG_COLOR
+        overlay.line.fill.background()
+
+        # Accent chiziq
+        line = slide.shapes.add_shape(1, Inches(0.3), Inches(1.8), Inches(6.5), Pt(2))
         line.fill.solid()
         line.fill.fore_color.rgb = ACCENT
         line.line.fill.background()
 
         # Slayd raqami
-        num_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(1), Inches(0.5))
+        num_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.15), Inches(1), Inches(0.5))
         tf = num_box.text_frame
         p = tf.paragraphs[0]
         r = p.add_run()
         r.text = f"{i+1:02d}"
-        r.font.size = Pt(13)
+        r.font.size = Pt(14)
         r.font.color.rgb = ACCENT
         r.font.bold = True
 
         # Sarlavha
-        title_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.3), Inches(6.8), Inches(1.3))
+        title_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.4), Inches(6.5), Inches(1.3))
         tf2 = title_box.text_frame
         tf2.word_wrap = True
         p2 = tf2.paragraphs[0]
         r2 = p2.add_run()
         r2.text = slide_data["title"]
-        r2.font.size = Pt(30) if i == 0 else Pt(24)
+        r2.font.size = Pt(28) if i == 0 else Pt(22)
         r2.font.bold = True
         r2.font.color.rgb = WHITE
 
-        # Kontent nuqtalari
-        content_box = slide.shapes.add_textbox(Inches(0.3), Inches(1.9), Inches(6.8), Inches(5.2))
+        # Kontent
+        content_box = slide.shapes.add_textbox(Inches(0.3), Inches(2.0), Inches(6.5), Inches(5.0))
         tf3 = content_box.text_frame
         tf3.word_wrap = True
 
@@ -276,6 +325,26 @@ async def quiz_next_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     text = update.message.text.strip()
+
+    # Ism kutilayotgan bo'lsa
+    if context.user_data.get("waiting_name"):
+        user_names[user_id] = text
+        context.user_data["waiting_name"] = False
+        funny_welcomes = [
+            f"Vay, {text} aka, zo'r ism ekan! 🔥\n\nEndi men sizningman! 😄 Nima qilishimni xohlaysiz?",
+            f"Oho, {text}! Juda chiroyli ism! ✨\n\nKeling endi ishga kirishamiz! 💪",
+            f"Xush kelibsiz, {text} aka! 🎉\n\nMen 24/7 xizmatingizdaman, hatto tunda ham! 😄",
+            f"Zo'r, {text}! Endi biz do'stmiz! 🤝\n\nNimada yordam kerak?",
+        ]
+        import random as rnd
+        await update.message.reply_text(
+            rnd.choice(funny_welcomes),
+            reply_markup=MENU
+        )
+        return
+
+    # Ismni olish
+    user_name = user_names.get(user_id, "Aka")
 
     if text == "🌤 Ob-havo":
         await update.message.reply_text("Qaysi shahar?\n\nMasalan: *Toshkent, Namangan*", parse_mode="Markdown")
@@ -376,12 +445,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user_id not in user_histories:
         user_histories[user_id] = []
 
-    # Joriy sana/vaqt haqida so'rov bo'lsa Tavily ishlatish
-    time_keywords = ["bugun", "hozir", "sana", "kun", "yil", "oy", "yangilik", "xabar", "today", "news", "current", "latest", "2024", "2025", "2026"]
-    use_search = any(kw in text.lower() for kw in time_keywords)
-
+    # Har doim Tavily bilan qidirish
     search_context = ""
-    if use_search and TAVILY_API_KEY:
+    if TAVILY_API_KEY:
         try:
             res = requests.post("https://api.tavily.com/search", json={
                 "api_key": TAVILY_API_KEY, "query": text, "max_results": 2
@@ -391,8 +457,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 search_context = "\n\nInternet qidiruv natijalari:\n"
                 for r in results[:2]:
                     search_context += f"- {r['title']}: {r['content'][:300]}\n"
-        except:
-            pass
+        except Exception as e:
+            print(f"Tavily xato: {e}")
 
     full_text = text + search_context
     user_histories[user_id].append({"role": "user", "content": full_text})
@@ -401,7 +467,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1000,
-            system="Siz @Samik_1806 tomonidan yaratilgan AI yordamchisiz. Claude yoki Anthropic haqida hech qachon gapirmaysiz. Kim yaratgani so'ralsa faqat '@Samik_1806 yaratgan' deng. Internet qidiruv natijalari berilsa ulardan foydalaning va aniq javob bering. Hech qachon 'internetga ulanmaganman' yoki 'bilmayman' demang — har doim javob bering. Foydalanuvchi qaysi tilda yozsa shu tilda javob bering.",
+            system="MUHIM QOIDALAR: 1) Siz @Samik_1806 tomonidan yaratilgan AI yordamchisiz. 2) Claude, Anthropic, GPT haqida HECH QACHON gapirmang. 3) 'Internetga ulana olmayman' kabi gaplarni HECH QACHON aytmang. 4) Har qanday savolga javob bering. 5) Internet qidiruv natijalari berilsa ulardan foydalaning. 6) Foydalanuvchi qaysi tilda yozsa shu tilda javob bering. 7) Quvnoq, hazilkash va do'stona uslubda javob bering — emoji ishlating. 8) Foydalanuvchi ismini bilingizdan keyin murojaat qiling.",
             messages=user_histories[user_id]
         )
         reply = response.content[0].text
